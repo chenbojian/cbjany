@@ -4,6 +4,7 @@ angular.module('App', [])
         var promise = defered.promise;
         setTimeout(function () {
             defered.notify('haha');
+            defered.resolve('haha');
         },100);
     
 
@@ -13,7 +14,9 @@ angular.module('App', [])
             console.log('reject');
         }, function () {
             console.log('notify');
-        });
+        })
+        .then(function() {console.log(2)})
+        .then(function() {console.log('3')});
 
         $http({
             method: 'GET', 

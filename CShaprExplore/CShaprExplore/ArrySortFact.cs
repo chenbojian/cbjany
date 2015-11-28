@@ -30,18 +30,18 @@ namespace CShaprExplore
         public void test_sort_using_delegate()
         {
             MyArrayClass[] array = { new MyArrayClass(3), new MyArrayClass(1), new MyArrayClass(2) };
-            Array.Sort(array, compareMyArray);
+            Array.Sort(array, CompareMyArray);
             Console.WriteLine("hello");
             Assert.Equal(1, array[0].Value);
         }
 
-        private int compareMyArray(MyArrayClass x, MyArrayClass y)
+        private static int CompareMyArray(MyArrayClass x, MyArrayClass y)
         {
             if (x.Value > y.Value)
             {
                 return 1;
             }
-            else if (x.Value < y.Value)
+            if (x.Value < y.Value)
             {
                 return -1;
             }

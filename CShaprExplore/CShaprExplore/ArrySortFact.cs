@@ -22,7 +22,7 @@ namespace CShaprExplore
         {
             MyArrayClass[] array = { new MyArrayClass(3), new MyArrayClass(1), new MyArrayClass(2) };
             Array.Sort(array, new CompareA());
-            Console.WriteLine("hello");
+            output.WriteLine("==============");
             Assert.Equal(1, array[0].Value);
         }
 
@@ -49,7 +49,7 @@ namespace CShaprExplore
         }
     }
 
-    class CompareA : IComparer<MyArrayClass>
+    internal class CompareA : IComparer<MyArrayClass>
     {
         public int Compare(MyArrayClass x, MyArrayClass y)
         {

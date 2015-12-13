@@ -19,7 +19,7 @@ import {bootstrap, Component, FORM_DIRECTIVES, CORE_DIRECTIVES} from 'angular2/a
             </div>
         </div>
         `,
-    directives: [FORM_DIRECTIVES, CORE_DIRECTIVES]
+    directives: [FORM_DIRECTIVES, CORE_DIRECTIVES],
     styles: [`
         .heroes {list-style-type:none; margin-left: 1em; padding: 0; width: 10em;}
         .heroes li { cursor: poiter; position: relative; left: 0; transition: all 0.2s ease; }

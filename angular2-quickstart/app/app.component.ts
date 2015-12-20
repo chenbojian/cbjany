@@ -1,19 +1,21 @@
-import {Component} from 'angular2/core';
+import {Component, OnInit} from 'angular2/core';
 import {HeroDetailComponent} from './hero-detail.component'
 import {Hero} from './hero'
+import {HeroService} from './hero.service'
+
 @Component({
-selector: 'my-app',
-template:`
-    <h1>{{title}}</h1>
-    <h2>My Heroes</h2>
-    <ul class="heroes">
-        <li *ngFor="#hero of heroes"
-            [class.selected]="hero === selectedHero"
-            (click)="onSelect(hero)">
-            <span class="badge">{{hero.id}}</span> {{hero.name}}
-        </li>
-    </ul>
-    <my-hero-detail [hero]="selectedHero"></my-hero-detail>
+    selector: 'my-app',
+    template:`
+        <h1>{{title}}</h1>
+        <h2>My Heroes</h2>
+        <ul class="heroes">
+            <li *ngFor="#hero of heroes"
+                [class.selected]="hero === selectedHero"
+                (click)="onSelect(hero)">
+                <span class="badge">{{hero.id}}</span> {{hero.name}}
+            </li>
+        </ul>
+        <my-hero-detail [hero]="selectedHero"></my-hero-detail>
     `,
     styles:[`
         .heroes {list-style-type: none; margin-left: 1em; padding: 0; width: 10em;}
@@ -31,24 +33,25 @@ template:`
         }
         .selected { background-color: #EEE; color: #369; }
     `],
-    directives: [HeroDetailComponent]
+    directives: [HeroDetailComponent],
+    providers: [HeroService]
 })
-export class AppComponent {
+export class AppComponent implements OnInit{
     public title = 'Tour of Heroes';
-    public heroes = HEROES;
+    public heroes: Hero[];
     public selectedHero: Hero;
+    
+    constructor(private _heroService: HeroService) {
+    }
+    
+    ngOnInit() {
+        this.getHeros();
+    }
+    
+    public getHeros () {
+        this._heroService.getHeroes().then(heroes => this.heroes = heroes);
+    }
+    
     onSelect(hero: Hero) { this.selectedHero = hero; }
 }
 
-var HEROES: Hero[] = [
-    { "id": 11, "name": "Mr. Nice" },
-    { "id": 12, "name": "Narco" },
-    { "id": 13, "name": "Bombasto" },
-    { "id": 14, "name": "Celeritas" },
-    { "id": 15, "name": "Magneta" },
-    { "id": 16, "name": "RubberMan" },
-    { "id": 17, "name": "Dynama" },
-    { "id": 18, "name": "Dr IQ" },
-    { "id": 19, "name": "Magma" },
-    { "id": 20, "name": "Tornado" }
-];

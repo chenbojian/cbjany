@@ -1,10 +1,11 @@
 // ==UserScript==
 // @name         hacg by cbj
 // @namespace    http://your.homepage/
-// @version      0.1.1
+// @version      0.1.2
 // @description  enter something useful
 // @author       You
-// @match        https://hacg.lol/*
+// @match        http*://hacg.lol/*
+// @match        http*://*.hacg.lol/*
 // @grant        none
 // ==/UserScript==
 

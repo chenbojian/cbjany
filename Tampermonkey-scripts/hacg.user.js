@@ -12,7 +12,7 @@
 var content = $('.entry-content');
 content.each(function(i, el) {
     var newContent = $(el).html().replace(/[A-Za-z0-9]{40}/g, '<div class = "magnet">magnet:?xt=urn:btih:$&</div>');
-    newContent = newContent.replace(/(\/s\/\w+) /, 'http://pan.baidu.com$0');
+    newContent = newContent.replace(/(\/s\/\w+) /g, 'http://pan.baidu.com$1');
     $(el).html(newContent);
 });
 var magnet = $('.magnet');

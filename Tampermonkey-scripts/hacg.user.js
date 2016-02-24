@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         hacg by cbj
 // @namespace    http://your.homepage/
-// @version      0.1.8
+// @version      0.1.9
 // @description  enter something useful
 // @author       You
 // @match        http*://hacg.li/*
@@ -26,7 +26,7 @@ tool.css({
 var content = $('article').html() + $('#comments').html();
 
 tool.click(function() {
-	var magnets = content.match(/[A-Za-z0-9]{40}/g).map(m => `magnet:?xt=urn:btih:${m}`);
+	var links = content.match(/[A-Za-z0-9]{40}/g).map(m => `magnet:?xt=urn:btih:${m}`);
 	var baiduReg = /(\/s\/\w+) (\w+)/g;
 	var result, baiduLinks = [];
 	while(result = baiduReg.exec(content)) {
@@ -34,14 +34,15 @@ tool.click(function() {
 	}
 
     if($('.cbj-abstract').length === 0){
-        buildAbstract(magnets.concat(baiduLinks));
+        buildAbstract(links.concat(baiduLinks));
     } else {
         $('.cbj-abstract').remove();
     }
 })
 
-function buildAbstract(magnets) {
-    var list = magnets.map(m => `<li>${m}</li>`).join('');
+function buildAbstract(links) {
+    links = [...new Set(links)];
+    var list = links.map(m => `<li>${m}</li>`).join('');
     var div = $(`<div class="cbj-abstract"><ul>${list}</ul></div>`);
     $('.entry-content').prepend(div);
 }

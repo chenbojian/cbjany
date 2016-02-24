@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         hacg by cbj
 // @namespace    http://your.homepage/
-// @version      0.1.9
+// @version      0.1.10
 // @description  enter something useful
 // @author       You
 // @match        http*://hacg.li/*
@@ -23,7 +23,7 @@ tool.css({
 	backgroundColor: 'white'
 });
 
-var content = $('article').html() + $('#comments').html();
+var content = $('article').html() + $('#comments .commentList').html();
 
 tool.click(function() {
 	var links = content.match(/[A-Za-z0-9]{40}/g).map(m => `magnet:?xt=urn:btih:${m}`);

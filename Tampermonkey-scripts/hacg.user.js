@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         hacg by cbj
 // @namespace    http://your.homepage/
-// @version      0.1.5
+// @version      0.1.6
 // @description  enter something useful
 // @author       You
 // @match        http*://hacg.*/*
@@ -21,7 +21,7 @@ tool.css({
 	backgroundColor: 'white'
 });
 
-var content = $('article').html();
+var content = $('article').html() + $('#comments').html();
 
 tool.click(function() {
 	var magnets = content.match(/[A-Za-z0-9]{40}/g).map(m => `magnet:?xt=urn:btih:${m}`);

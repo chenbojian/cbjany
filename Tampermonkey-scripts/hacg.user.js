@@ -1,11 +1,13 @@
 // ==UserScript==
 // @name         hacg by cbj
 // @namespace    http://your.homepage/
-// @version      0.1.6
+// @version      0.1.8
 // @description  enter something useful
 // @author       You
-// @match        http*://hacg.*/*
-// @match        http*://*.hacg.*/*
+// @match        http*://hacg.li/*
+// @match        http*://hacg.lol/*
+// @match        http*://*.hacg.lol/*
+// @match        http*://*.hacg.li/*
 // ==/UserScript==
 
 var tool = $('<div class="cbj-hacg-tool"></div>');

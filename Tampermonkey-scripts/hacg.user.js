@@ -4,8 +4,8 @@
 // @version      0.1.5
 // @description  enter something useful
 // @author       You
-// @match        http*://hacg.lol/*
-// @match        http*://*.hacg.lol/*
+// @match        http*://hacg.*/*
+// @match        http*://*.hacg.*/*
 // ==/UserScript==
 
 var tool = $('<div class="cbj-hacg-tool"></div>');

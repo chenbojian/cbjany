@@ -7,6 +7,19 @@ describe('something', () => {
 
     it('should be cat', () => {
         var cat = new Cat(); 
-        expect(cat.name).toEqual('name');
+        spyOn(cat, 'getName').and.returnValue('cat');
+        expect(cat.getName()).toEqual('cat');
+    });
+
+    it('should be another cat', () => {
+        var cat = new Cat(); 
+        spyOn(cat, 'getName').and.callThrough();
+
+        expect(cat.getName()).toEqual('name');
+
+        expect(cat.getName).toHaveBeenCalled();
+
+        cat.getName.and.returnValue('another cat');
+        expect(cat.getName()).toEqual('another cat');
     });
 });

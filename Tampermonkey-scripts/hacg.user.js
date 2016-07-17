@@ -1,16 +1,23 @@
 // ==UserScript==
 // @name         hacg by cbj
 // @namespace    http://your.homepage/
-// @version      0.1.12
+// @version      0.1.13
 // @description  enter something useful
 // @author       You
 // @require      https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/1.5.8/clipboard.min.js
+// @require      https://cdnjs.cloudflare.com/ajax/libs/babel-core/5.6.15/browser-polyfill.min.js
+// @require      https://cdnjs.cloudflare.com/ajax/libs/babel-core/5.6.15/browser.min.js
 // @match        http*://hacg.li/*
 // @match        http*://hacg.lol/*
 // @match        http*://*.hacg.lol/*
 // @match        http*://*.hacg.li/*
 // ==/UserScript==
+/* jshint ignore:start */
+var inline_src = (<><![CDATA[
+/* jshint ignore:end */
+/* jshint esnext: true */
 
+// Your code here...
 var tool = $('<div class="cbj-hacg-tool"></div>');
 $('body').append(tool);
 
@@ -73,3 +80,10 @@ function buildAbstract(links) {
     div.find('li').css('background-color','rgb(50,50,50)');
     clipboard = new Clipboard('button.copy', {target: button => button.previousSibling});
 }
+
+/* jshint ignore:start */
+]]></>).toString();
+var c = babel.transform(inline_src);
+eval(c.code);
+/* jshint ignore:end */
+

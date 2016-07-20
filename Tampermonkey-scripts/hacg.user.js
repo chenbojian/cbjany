@@ -1,14 +1,13 @@
 // ==UserScript==
 // @name         hacg by cbj
 // @namespace    http://your.homepage/
-// @version      0.1.14
+// @version      0.1.15
 // @description  enter something useful
 // @author       You
 // @require      https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/1.5.8/clipboard.min.js
 // @require      https://cdnjs.cloudflare.com/ajax/libs/babel-core/5.6.15/browser-polyfill.min.js
 // @require      https://cdnjs.cloudflare.com/ajax/libs/babel-core/5.6.15/browser.min.js
-// @include      https://*.hacg.red/*
-// @include      https://*.hacg.li/*
+// @include      *://*.hacg.*/*
 // ==/UserScript==
 /* jshint ignore:start */
 var inline_src = (<><![CDATA[
@@ -40,9 +39,10 @@ var inline_src = (<><![CDATA[
         var links = content.match(/[A-Za-z0-9]{40}/g).map(m => `magnet:?xt=urn:btih:${m}`);
         var baiduReg = /(\/s\/\w+) (\w+)/g;
         var result, baiduLinks = [];
-        while(result = baiduReg.exec(content)) {
+        do {
+            result = baiduReg.exec(content);
             baiduLinks.push(`<a href="http://pan.baidu.com${result[1]}">${result[1]}</a> ${result[2]}`);
-        }
+        } while (result);
 
         if($('.cbj-abstract').length === 0){
             buildAbstract(links.concat(baiduLinks));
@@ -50,7 +50,7 @@ var inline_src = (<><![CDATA[
             clipboard.destroy();
             $('.cbj-abstract').remove();
         }
-    })
+    });
 
     function buildAbstract(links) {
         links = [...new Set(links)];

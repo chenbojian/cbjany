@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         hacg by cbj
 // @namespace    http://your.homepage/
-// @version      0.1.15
+// @version      0.1.16
 // @description  enter something useful
 // @author       You
 // @require      https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/1.5.8/clipboard.min.js
@@ -33,7 +33,7 @@ var inline_src = (<><![CDATA[
     });
 
     var content = $('article').html() + $('#comments .commentList').html();
-    var content = content.replace('本站不提供下载', '');
+    content = content.replace('本站不提供下载', '');
     var clipboard;
     tool.click(function() {
         var links = content.match(/[A-Za-z0-9]{40}/g).map(m => `magnet:?xt=urn:btih:${m}`);

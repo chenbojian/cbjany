@@ -1,0 +1,85 @@
+    // ==UserScript==
+    // @name         tyyy
+    // @namespace    http://tampermonkey.net/
+    // @version      0.1
+    // @description  try to take over the world!
+    // @author       You
+    // @include        *://t66y.com/thread*
+    // @grant        all
+    // ==/UserScript==
+
+    (function() {
+        'use strict';
+
+        class MinHeap {
+            constructor(size, key) {
+                this.size = size;
+                this.objs = [];
+                this.compareFunc = getCompareFunc(key);
+                function getCompareFunc(key) {
+                    if(typeof(key) === "undefined"){
+                        return (a, b) => {
+                            if(a > b) return 1;
+                            if(a < b) return -1;
+                            return 0;
+                        };
+                    } else {
+                        return (a, b) => {
+                            if(a[key] > b[key]) return 1;
+                            if(a[key] < b[key]) return -1;
+                            return 0;
+                        };
+                    }
+                }
+            }
+
+            insert(obj) {
+                if(this.objs.length < this.size){
+                    this.objs.push(obj);
+                    return;
+                }
+
+                if(this.compareFunc(obj, this.objs[0]) === 1){
+                    this.objs.shift();
+                    this.objs.unshift(obj);
+                }
+                this.objs.sort(this.compareFunc);
+            }
+        }
+
+        // Your code here...
+        var $ = document.querySelector.bind(document);
+        var $$ = document.querySelectorAll.bind(document);
+
+        var table = $('#ajaxtable > tbody:nth-child(2)');
+        highlightLines(table);
+
+        function highlightLines(table){
+            var trs = getValidLines(table);
+            var top15 = getTopReplied(trs, 15);
+            changeStyle(top15,'backgroundColor', '#66ccff');
+
+            function getTopReplied(elements, size) {
+                var replies = elements
+                    .map(e => parseInt(e.querySelector('td:nth-child(4)').textContent))
+                    .map((r, index) => ({
+                        index: index,
+                        replyNum: r
+                    }));
+                var heap = new MinHeap(size, 'replyNum');
+                replies.forEach(r => heap.insert(r));
+                return heap.objs.map(o => elements[o.index]);
+            }
+
+            function changeStyle(elements, key, value) {
+                elements.forEach(tr => tr.style[key] = value);
+            }
+            function getValidLines(table) {
+                var all = Array.from(table.querySelectorAll('tr'));
+                var index = all.findIndex(tr => tr.querySelectorAll('.tr2 td').length === 1);
+                var all = all.slice(index + 1);
+                return all.filter(tr => tr.className.includes('tr3'));
+            }
+        }
+
+    })();

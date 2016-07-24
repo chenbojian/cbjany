@@ -63,11 +63,11 @@
 
 
             function showTimeTag(elements) {
-                var todays = elements.filter(e => {
-                    isToday(e.querySelector('td:nth-child(3) div').textContent)
-                });
+                var todays = elements.filter(e => isToday(e.querySelector('td:nth-child(3) div').textContent));
+                todays.forEach(e => e.querySelector('td:nth-child(1) a').textContent = 'T');
 
-                todays.forEach(e => e.querySelector('td:nth-child(1) a').textContent = 'Today');
+                var yestodays = elements.filter(e => isToday(e.querySelector('td:nth-child(3) div').textContent));
+                yestodays.forEach(e => e.querySelector('td:nth-child(1) a').textContent = 'Y');
 
                 function isToday(date) {
                     var datetime = new Date(date);
@@ -75,6 +75,14 @@
                     return datetime.getFullYear() === now.getFullYear() &&
                         datetime.getMonth() === now.getMonth() &&
                         datetime.getDate() === now.getDate();
+                }
+
+                function isYestoday(date) {
+                    var datetime = new Date(date);
+                    var now = new Date();
+                    return datetime.getFullYear() === now.getFullYear() &&
+                        datetime.getMonth() === now.getMonth() &&
+                        datetime.getDate() + 1 === now.getDate();
                 }
             }
 

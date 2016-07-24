@@ -1,7 +1,7 @@
     // ==UserScript==
     // @name         tyyy
     // @namespace    http://tampermonkey.net/
-    // @version      0.1
+    // @version      0.1.1
     // @description  try to take over the world!
     // @author       You
     // @include        *://t66y.com/thread*
@@ -58,6 +58,25 @@
             var trs = getValidLines(table);
             var top15 = getTopReplied(trs, 15);
             changeStyle(top15,'backgroundColor', '#66ccff');
+            showTimeTag(trs);
+
+
+
+            function showTimeTag(elements) {
+                var todays = elements.filter(e => {
+                    isToday(e.querySelector('td:nth-child(3) div').textContent)
+                });
+
+                todays.forEach(e => e.querySelector('td:nth-child(1) a').textContent = 'Today');
+
+                function isToday(date) {
+                    var datetime = new Date(date);
+                    var now = new Date();
+                    return datetime.getFullYear() === now.getFullYear() &&
+                        datetime.getMonth() === now.getMonth() &&
+                        datetime.getDate() === now.getDate();
+                }
+            }
 
             function getTopReplied(elements, size) {
                 var replies = elements

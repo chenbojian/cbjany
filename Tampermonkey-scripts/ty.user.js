@@ -1,7 +1,7 @@
     // ==UserScript==
     // @name         tyyy
     // @namespace    http://tampermonkey.net/
-    // @version      0.1.3
+    // @version      0.1.4
     // @description  try to take over the world!
     // @author       You
     // @include      *://t66y.com/thread*
@@ -66,7 +66,7 @@
                 var todays = elements.filter(e => isToday(e.querySelector('td:nth-child(3) div').textContent));
                 todays.forEach(e => e.querySelector('td:nth-child(1) a').textContent = 'T');
 
-                var yestodays = elements.filter(e => isToday(e.querySelector('td:nth-child(3) div').textContent));
+                var yestodays = elements.filter(e => isYestoday(e.querySelector('td:nth-child(3) div').textContent));
                 yestodays.forEach(e => e.querySelector('td:nth-child(1) a').textContent = 'Y');
 
                 function isToday(date) {

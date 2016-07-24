@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         tyyy
 // @namespace    http://tampermonkey.net/
-// @version      0.1.5
+// @version      0.1.6
 // @description  try to take over the world!
 // @author       You
 // @include      *://t66y.com/thread*
@@ -104,7 +104,7 @@
         function getValidLines(table) {
             var all = Array.from(table.querySelectorAll('tr'));
             var index = all.findIndex(tr => tr.querySelectorAll('.tr2 td').length === 1);
-            all.slice(index + 1);
+            all = all.slice(index + 1);
             return all.filter(tr => tr.className.includes('tr3'));
         }
     }

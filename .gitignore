@@ -216,3 +216,4 @@ __pycache__/
 *.pyc
 
 dist/
+.vscode/

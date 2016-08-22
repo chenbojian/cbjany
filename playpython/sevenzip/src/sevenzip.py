@@ -65,6 +65,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('-p', dest='password', default=None)
     parser.add_argument('-o', dest='out_dir', default='tmp')
+    parser.add_argument('-z', dest='zip', default=False)
     input_args = parser.parse_args()
 
     paths = it.chain(Path('.').glob('*.rar'), Path('.').glob('*.zip'))
@@ -78,16 +79,19 @@ if __name__ == '__main__':
         except UnicodeEncodeError:
             print('name has encoding err', rt)
             continue
-
-    with EnterDir(input_args.out_dir):
-        for d in Path('.').glob('*'):
-            rt = SevenZip().zip(d.name)
-            try:
-                if rt == 0:
-                    print(d.name, 'ZIP---Ok')
-                else:
-                    print(d.name, 'ZIP---Fail')
-            except UnicodeEncodeError:
-                print('name has encoding err', rt)
-                continue
+    
+    def zip():
+        with EnterDir(input_args.out_dir):
+            for d in Path('.').glob('*'):
+                rt = SevenZip().zip(d.name)
+                try:
+                    if rt == 0:
+                        print(d.name, 'ZIP---Ok')
+                    else:
+                        print(d.name, 'ZIP---Fail')
+                except UnicodeEncodeError:
+                    print('name has encoding err', rt)
+                    continue
+    if input_args.zip:
+        zip()
 

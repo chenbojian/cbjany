@@ -1,0 +1,1 @@
+Copy-Item 'src/sevenzip.py' 'C:\chenbojian\workspace\bin\' 

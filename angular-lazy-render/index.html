@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html ng-app="App">
+  <head>
+    <script type="text/javascript" src="angular.js"></script>
+    <link rel="stylesheet" href="style.css" />
+    <script src="index.js"></script>
+  </head>
+
+  <body>
+    <div ng-controller="ListController as vm">
+      <form name="cbj">
+        <table class="header">
+        <thead>
+          <tr>
+            <th class="name">name</th>
+            <th class="age">age</th>
+            <th class="number">number</th>
+          </tr>
+        </thead>
+        </table>
+        <table class="body" lazy-load="vm.veryLongList">
+        <tbody>
+            <tr ng-repeat="i in lazyList track by $index">
+              <td class="name">{{i}}</td>
+              <td class="age">{{i}}</td>
+              <td class="number">{{vm.calc(i)}}</td>
+            </tr>
+        </tbody>
+        </table>
+      </form>
+    </div>
+  </body>
+
+</html>

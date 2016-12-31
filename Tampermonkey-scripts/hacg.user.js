@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         hacg by cbj
 // @namespace    http://your.homepage/
-// @version      0.2.0
+// @version      0.2.1
 // @description  enter something useful
 // @author       You
 // @require      https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/1.5.8/clipboard.min.js
@@ -38,8 +38,8 @@ var inline_src = (<><![CDATA[
     content = content.replace('本站不提供下载', '');
     var clipboard;
     tool.click(function() {
-        var links = content.match(/[A-Za-z0-9]{40}/g).map(m => `magnet:?xt=urn:btih:${m}`) || [];
-        var specialLinks = content.match(/[A-Z2-9]{32}/g).map(m => `magnet:?xt=urn:btih:${decodeBase32(m)}`) || [];
+        var links = match(content, /[A-Za-z0-9]{40}/g).map(m => `magnet:?xt=urn:btih:${m}`);
+        var specialLinks = match(content, /[A-Z2-9]{32}/g).map(m => `magnet:?xt=urn:btih:${decodeBase32(m)}`);
         var baiduReg = /(\/s\/\w+) (\w+)/g;
         var result, baiduLinks = [];
         while ((result = baiduReg.exec(content)) !== null) {
@@ -54,6 +54,11 @@ var inline_src = (<><![CDATA[
             $('.cbj-abstract').remove();
         }
     });
+
+    function match(content, reg) {
+        var result = content.match(reg);
+        return result || [];
+    }
 
     function buildAbstract(links, specialLinks) {
         links = [...new Set(links)];

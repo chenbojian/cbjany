@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         hacg by cbj
 // @namespace    http://your.homepage/
-// @version      0.1.19
+// @version      0.2.0
 // @description  enter something useful
 // @author       You
 // @require      https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/1.5.8/clipboard.min.js
@@ -38,7 +38,8 @@ var inline_src = (<><![CDATA[
     content = content.replace('本站不提供下载', '');
     var clipboard;
     tool.click(function() {
-        var links = content.match(/[A-Za-z0-9]{40}/g).map(m => `magnet:?xt=urn:btih:${m}`);
+        var links = content.match(/[A-Za-z0-9]{40}/g).map(m => `magnet:?xt=urn:btih:${m}`) || [];
+        var specialLinks = content.match(/[A-Z2-9]{32}/g).map(m => `magnet:?xt=urn:btih:${decodeBase32(m)}`) || [];
         var baiduReg = /(\/s\/\w+) (\w+)/g;
         var result, baiduLinks = [];
         while ((result = baiduReg.exec(content)) !== null) {
@@ -47,18 +48,19 @@ var inline_src = (<><![CDATA[
         }
 
         if($('.cbj-abstract').length === 0){
-            buildAbstract(links.concat(baiduLinks));
+            buildAbstract(links.concat(baiduLinks), specialLinks);
         } else {
             clipboard.destroy();
             $('.cbj-abstract').remove();
         }
     });
 
-    function buildAbstract(links) {
+    function buildAbstract(links, specialLinks) {
         links = [...new Set(links)];
         var icon = 'https://cdnjs.cloudflare.com/ajax/libs/foundicons/3.0.0/svgs/fi-page-copy.svg';
         var list = links.map((m,i) => `<li><span>${m}</span><button class="copy"><img src="${icon}" alt="Copy to clipboard"></button></li>`).join('');
-        var div = $(`<div class="cbj-abstract"><ul>${list}</ul></div>`);
+        var specialList = specialLinks.map((m,i) => `<li><span style='color: red'>${m}</span><button class="copy"><img src="${icon}" alt="Copy to clipboard"></button></li>`).join('');
+        var div = $(`<div class="cbj-abstract"><ul>${list}${specialList}</ul></div>`);
         $('.entry-content').prepend(div);
 
         var buttonStyle = {
@@ -83,6 +85,36 @@ var inline_src = (<><![CDATA[
         $('button.copy img').css({width: '20px', height: '20px'});
         div.find('li').css('background-color','rgb(50,50,50)');
         clipboard = new Clipboard('button.copy', {target: button => button.previousSibling});
+    }
+
+    function decodeBase32(text) {
+        var base32 = "ABCDEFGHIJKLMNOPQRSTUVWXYZ234567".split("");
+        var result = "";
+        for(var i=0; i<text.length; i++) {
+            var t = base32.indexOf(text[i]);
+            var e1,e2,e3,e4,e5;
+            var temp;
+            switch(i % 4) {
+                case 0:
+                    e1 = t >> 1;
+                    temp = (t & 0b1) << 3;
+                    break;
+                case 1:
+                    e2 = temp | t >> 2;
+                    temp = (t & 0b11) << 2;
+                    break;
+                case 2:
+                    e3 = temp | t >> 3;
+                    temp = (t & 0b111) << 1;
+                    break;
+                case 3:
+                    e4 = temp | t >> 4;
+                    e5 = t & 0b1111;
+                    result  = result + [e1, e2, e3, e4, e5].map(x => x.toString(16)).join("");
+                    break;
+            }
+        }
+        return result;
     }
 
 })();

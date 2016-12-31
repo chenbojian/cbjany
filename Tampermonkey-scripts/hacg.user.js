@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         hacg by cbj
 // @namespace    http://your.homepage/
-// @version      0.1.18
+// @version      0.1.19
 // @description  enter something useful
 // @author       You
 // @require      https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/1.5.8/clipboard.min.js
@@ -23,6 +23,8 @@ var inline_src = (<><![CDATA[
     $('body').append(tool);
 
     tool.css({
+        backgroundImage: url('/favicon.ico')
+        backgroundSize: '100% 100%',
         cursor: 'pointer',
         position: 'fixed',
         right: '20px',

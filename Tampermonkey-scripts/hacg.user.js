@@ -23,7 +23,7 @@ var inline_src = (<><![CDATA[
     $('body').append(tool);
 
     tool.css({
-        backgroundImage: url('/favicon.ico')
+        backgroundImage: "url('/favicon.ico')",
         backgroundSize: '100% 100%',
         cursor: 'pointer',
         position: 'fixed',

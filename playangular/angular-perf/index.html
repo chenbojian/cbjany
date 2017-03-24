@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html ng-app="app">
+<head>
+<meta name="description" content="DBMON Angular" />
+<script src="./node_modules/angular/angular.min.js"></script>
+  <link href="./node_modules/bootstrap/dist/css/bootstrap.css" rel="stylesheet" type="text/css" />
+  <link href="../styles.css" rel="stylesheet" type="text/css" />
+  <meta charset="utf-8">
+  <title>dbmon (angular)</title>
+</head>
+<body ng-controller="DBMonCtrl">
+  <!-- DBMon -->
+  <div>
+    <table class="table table-striped latest-data">
+      <tbody>
+        <!-- Database -->
+        <tr ng-repeat="(key, db) in databases track by $index">
+          <td class="dbname">
+            {{db.name}}
+          </td>
+          <!-- Sample -->
+          <td class="query-count">
+            <span class="{{helper.getCountClassName(db)}}">
+              {{helper.getLastSample(db).queries.length}}
+            </span>
+          </td>
+          <!-- Query -->
+          <td ng-repeat="q in topFiveQueries[key] track by $index" class="{{helper.getElapsedClassName(q.elapsed)}}">
+            {{q.elapsed | formatElapsed}}
+            <div class="popover left">
+              <div class="popover-content">
+                {{q.query}}
+              </div>
+              <div class="arrow"></div>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <script src="app.js"></script>
+  <script src="https://cdn.rawgit.com/paulirish/memory-stats.js/master/memory-stats.js"></script>
+  <script>
+  var stats = new MemoryStats();
+  stats.domElement.style.position = 'fixed';
+  stats.domElement.style.right        = '0px';
+  stats.domElement.style.bottom       = '0px';
+  document.body.appendChild( stats.domElement );
+  requestAnimationFrame(function rAFloop(){
+      stats.update();
+      requestAnimationFrame(rAFloop);
+  });
+  </script>
+
+</body>
+</html>

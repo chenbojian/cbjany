@@ -1,0 +1,10 @@
+<li ng-class="{'completed': $ctrl.item.completed, 'editing': $ctrl.editing}">
+	<div class="view">
+		<input class="toggle" type="checkbox" ng-model="$ctrl.completed" ng-change="$ctrl.onToggle()">
+		<label ng-dblclick="$ctrl.edit()">{{$ctrl.item.name}}</label>
+		<button class="destroy" ng-click="$ctrl.onDelete()"></button>
+	</div>
+	<form ng-submit="$ctrl.exitEdit('submit')">
+		<input class="edit" ng-model="$ctrl.value" ng-blur="$ctrl.exitEdit('blur')" ng-keydown="$event.key === 'Escape' && $ctrl.exitEdit('esc')">
+	</form>
+</li>

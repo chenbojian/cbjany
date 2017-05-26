@@ -56,7 +56,7 @@ export class TodoService {
 				id: todo.id,
 				name,
 				completed: todo.completed
-			}
+			},
 			...this.todoList.slice(index + 1)
 		];
 

@@ -56,7 +56,26 @@
 
     function highlightLines(table){
         var trs = getValidLines(table);
+        if(trs.length === 0) {
+        	return;
+        }
         var top15 = getTopReplied(trs, 15);
+        const firstLine = trs[0];
+        trs = trs.sort((a, b) => {
+        	if(getReplyNumber(a) < getReplyNumber(b)) {
+        		return -1;
+        	}
+        	if(getReplyNumber(a) > getReplyNumber(b)) {
+        		return 1;
+        	}
+        	return 0;
+        });
+        trs.reverse();
+
+        for(let tr of trs) {
+        	firstLine.before(tr);
+        }
+        
         changeStyle(top15,'backgroundColor', '#66ccff');
         showTimeTag(trs);
 
@@ -96,6 +115,10 @@
             var heap = new MinHeap(size, 'replyNum');
             replies.forEach(r => heap.insert(r));
             return heap.objs.map(o => elements[o.index]);
+        }
+
+        function getReplyNumber(tr) {
+        	return parseInt(tr.querySelector('td:nth-child(4)').textContent);
         }
 
         function changeStyle(elements, key, value) {

@@ -18,7 +18,6 @@ public class Percolation {
     private final int virtualTopIndex;
     private final int virtualBottomIndex;
     private boolean[][] gridOpenStatus;
-    private boolean[][] gridFullStatus;
     private final WeightedQuickUnionUF checkFullUf;
     private final WeightedQuickUnionUF checkPercolateUf;
     private int numberOfOpenSites;
@@ -29,7 +28,6 @@ public class Percolation {
         }
         this.gridSize = n;
         this.gridOpenStatus = new boolean[n][n];
-        this.gridFullStatus = new boolean[n][n];
 
         this.checkFullUf = new WeightedQuickUnionUF(n * n + 1);
         this.checkPercolateUf = new WeightedQuickUnionUF(n * n + 2);
@@ -98,11 +96,7 @@ public class Percolation {
         if (!isExist(row, col)) {
             throw new IllegalArgumentException();
         }
-        if (!gridFullStatus[row-1][col-1]) {
-            gridFullStatus[row-1][col-1] =
-                checkFullUf.connected(getIndex(row, col), virtualTopIndex);
-        }
-        return gridFullStatus[row-1][col-1];
+        return checkFullUf.connected(getIndex(row, col), virtualTopIndex);
     }
 
     public     int numberOfOpenSites() { // number of open sites

@@ -12,57 +12,72 @@
  ******************************************************************************/
 
 import edu.princeton.cs.algs4.WeightedQuickUnionUF;
-import java.util.ArrayList;
 
 public class Percolation {
-    private int gridSize;
-    private int virtualTopIndex;
+    private final int gridSize;
+    private final int virtualTopIndex;
+    private final int virtualBottomIndex;
     private boolean[][] gridOpenStatus;
-    private WeightedQuickUnionUF uf;
+    private boolean[][] gridFullStatus;
+    private final WeightedQuickUnionUF checkFullUf;
+    private final WeightedQuickUnionUF checkPercolateUf;
+    private int numberOfOpenSites;
 
     public Percolation(int n) {
+        if (n <= 0) {
+            throw new IllegalArgumentException();
+        }
         this.gridSize = n;
         this.gridOpenStatus = new boolean[n][n];
+        this.gridFullStatus = new boolean[n][n];
 
-        this.uf = new WeightedQuickUnionUF(n * n + 1);
+        this.checkFullUf = new WeightedQuickUnionUF(n * n + 1);
+        this.checkPercolateUf = new WeightedQuickUnionUF(n * n + 2);
 
         this.virtualTopIndex = n * n;
+        this.virtualBottomIndex = n * n + 1;
     }
 
     private int getIndex(int row, int col) {
         return (row - 1) * this.gridSize + col - 1;
     }
 
-    private ArrayList<Integer> getOpenSurroundIndexes(int row, int col) {
-        ArrayList<Integer> result = new ArrayList<Integer>();
-        if (isExist(row-1, col) && isOpen(row-1, col)) {
-            result.add(getIndex(row-1, col));
-        }
-        if (isExist(row+1, col) && isOpen(row+1, col)) {
-            result.add(getIndex(row+1, col));
-        }
-        if (isExist(row, col-1) && isOpen(row, col-1)) {
-            result.add(getIndex(row, col-1));
-        }
-        if (isExist(row, col+1) && isOpen(row, col+1)) {
-            result.add(getIndex(row, col+1));
-        }
-
-        if (row == 1) {
-            result.add(virtualTopIndex);
-        }
-        return result;
-    }
-
     public    void open(int row, int col) {
         if (!isExist(row, col)) {
             throw new IllegalArgumentException();
         }
-        gridOpenStatus[row-1][col-1] = true;
-        ArrayList<Integer> openSurroundIndexes = getOpenSurroundIndexes(row, col);
-        for (int i : openSurroundIndexes) {
-            uf.union(i, getIndex(row, col));
+        if (isOpen(row, col)) {
+            return;
         }
+
+        gridOpenStatus[row-1][col-1] = true;
+
+        if (isExist(row-1, col) && isOpen(row-1, col)) {
+            checkFullUf.union(getIndex(row-1, col), getIndex(row, col));
+            checkPercolateUf.union(getIndex(row-1, col), getIndex(row, col));
+        }
+        if (isExist(row+1, col) && isOpen(row+1, col)) {
+            checkFullUf.union(getIndex(row+1, col), getIndex(row, col));
+            checkPercolateUf.union(getIndex(row+1, col), getIndex(row, col));
+        }
+        if (isExist(row, col-1) && isOpen(row, col-1)) {
+            checkFullUf.union(getIndex(row, col-1), getIndex(row, col));
+            checkPercolateUf.union(getIndex(row, col-1), getIndex(row, col));
+        }
+        if (isExist(row, col+1) && isOpen(row, col+1)) {
+            checkFullUf.union(getIndex(row, col+1), getIndex(row, col));
+            checkPercolateUf.union(getIndex(row, col+1), getIndex(row, col));
+        }
+
+        if (row == 1) {
+            checkFullUf.union(virtualTopIndex, getIndex(row, col));
+            checkPercolateUf.union(virtualTopIndex, getIndex(row, col));            
+        }
+        if (row == gridSize) {
+            checkPercolateUf.union(virtualBottomIndex, getIndex(row, col));
+        }
+
+        numberOfOpenSites += 1;
     }
 
     private boolean isExist(int row, int col) {
@@ -80,28 +95,22 @@ public class Percolation {
     }
 
     public boolean isFull(int row, int col) {
-        return uf.connected(getIndex(row, col), virtualTopIndex);
+        if (!isExist(row, col)) {
+            throw new IllegalArgumentException();
+        }
+        if (!gridFullStatus[row-1][col-1]) {
+            gridFullStatus[row-1][col-1] =
+                checkFullUf.connected(getIndex(row, col), virtualTopIndex);
+        }
+        return gridFullStatus[row-1][col-1];
     }
 
     public     int numberOfOpenSites() { // number of open sites
-        int count = 0;
-        for (int i = 0; i < gridSize; i++) {
-            for (int j = 0; j < gridSize; j++) {
-                if (gridOpenStatus[i][j]) {
-                    count++;
-                }
-            }
-        }
-        return count;
+        return numberOfOpenSites;
     }
 
     public boolean percolates() {              // does the system percolate?
-        for (int col = 1; col <= gridSize; col++) {
-            if (uf.connected(getIndex(gridSize, col), virtualTopIndex)) {
-                return true;
-            }
-        }
-        return false;
+        return checkPercolateUf.connected(virtualBottomIndex, virtualTopIndex);
     }
 
     public static void main(String[] args) {   // test client (optional)

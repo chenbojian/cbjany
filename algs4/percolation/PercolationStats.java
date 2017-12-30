@@ -7,23 +7,26 @@
  *  Partner NetID:   N/A
  *  Partner Precept: N/A
  * 
- *  Description:  Model an n-by-n percolation system using the union-find
- *                data structure.
+ *  Description:  PercolationStats
+ *
  ******************************************************************************/
 import edu.princeton.cs.algs4.StdRandom;
 import edu.princeton.cs.algs4.StdStats;
 import edu.princeton.cs.algs4.StdOut;
 
 public class PercolationStats {
-    private double[] thresholds;
-    private int trials;
+    private static final double CONFIDENCE_95 = 1.96;
+
+    private final double mean;
+    private final double stddev;
+    private final double confidenceLo;
+    private final double confidenceHi;
 
     public PercolationStats(int n, int trials) {
         if (n <= 0 || trials <= 0) {
             throw new IllegalArgumentException();
         }
-        thresholds = new double[trials];
-        this.trials = trials;
+        double[] thresholds = new double[trials];
         for (int t = 0; t < trials; t++) {
             int[] positions = new int[n * n];
             for (int i = 0; i < n * n; i++) {
@@ -45,20 +48,25 @@ public class PercolationStats {
 
             thresholds[t] = (double) count / (n * n);
         }
+
+        mean = StdStats.mean(thresholds);
+        stddev = StdStats.stddev(thresholds);
+        confidenceLo = mean - CONFIDENCE_95 * stddev / Math.sqrt(trials);
+        confidenceHi = mean + CONFIDENCE_95 * stddev / Math.sqrt(trials);
     }
 
     public double mean() {
-        return StdStats.mean(thresholds);
+        return mean;
     }
 
     public double stddev() {
-        return StdStats.stddev(thresholds);
+        return stddev;
     }
     public double confidenceLo() {
-        return mean() - 1.96 * stddev() / Math.sqrt(trials);
+        return confidenceLo;
     }
     public double confidenceHi() {
-        return mean() + 1.96 * stddev() / Math.sqrt(trials);
+        return confidenceHi;
     }
 
     public static void main(String[] args) {

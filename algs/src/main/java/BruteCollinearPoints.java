@@ -10,14 +10,20 @@ public class BruteCollinearPoints {
     private int countOfSegments;
 
     public BruteCollinearPoints(Point[] points) {
-        Arrays.sort(points);
-        for (int i = 0; i < points.length - 1; i++) {
-            if (points[i].compareTo(points[i + 1]) == 0) {
+        for (Point point : points) {
+            if (point == null) {
                 throw new IllegalArgumentException();
             }
         }
+        for (int i = 0; i < points.length - 1; i++) {
+            for (int j = 1; j < points.length; j++) {
+                if (i != j && points[i].compareTo(points[j]) == 0) {
+                    throw new IllegalArgumentException();
+                }
+            }
+        }
 
-        segments = new LineSegment[points.length / 2 + 1];
+        segments = new LineSegment[points.length];
         countOfSegments = 0;
 
         for (int i = 0; i < points.length; i++) {

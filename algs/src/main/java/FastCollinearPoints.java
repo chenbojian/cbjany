@@ -7,7 +7,8 @@ import edu.princeton.cs.algs4.StdOut;
 public class FastCollinearPoints {
 
     private LineSegment[] segments;
-    private Point[][] existingSegmentPoints;
+    private Point[] points;
+    private double[][] pointSlopes;
     private int countOfSegments = 0;
 
     public FastCollinearPoints(Point[] points) {
@@ -26,22 +27,44 @@ public class FastCollinearPoints {
                 }
             }
         }
+        this.points = new Point[points.length];
+        for (int i = 0; i < points.length; i++) {
+            this.points[i] = points[i];
+        }
+        Arrays.sort(this.points);
+
+        initPointSlopes(this.points);
 
         segments = new LineSegment[1];
-        existingSegmentPoints = new Point[1][2];
 
-        for (int i = 0; i < points.length; i++) {
-            Point[] copiedPoints = copyAndSwap(points, i);
-            copiedPoints[0].draw();
+        for (int i = 0; i < this.points.length; i++) {
+            Point[] copiedPoints = new Point[this.points.length];
+            copiedPoints[0] = this.points[i];
+            for (int j = 1; j < this.points.length; j++) {
+                copiedPoints[j] = i == j ? this.points[0] : this.points[j];
+            }
+
             Arrays.sort(copiedPoints, 1, copiedPoints.length, copiedPoints[0].slopeOrder());
             findAndAddToSegments(copiedPoints);
+        }
+    }
 
+    private void initPointSlopes(Point[] points) {
+        pointSlopes = new double[points.length][points.length];
+        for (int i = 0; i < points.length; i++) {
+            for (int j = 0; j < points.length; j++) {
+                if (i > j) {
+                    pointSlopes[i][j] = pointSlopes[j][i];
+                } else {
+                    pointSlopes[i][j] = points[i].slopeTo(points[j]);
+                }
+            }
         }
     }
 
     private void findAndAddToSegments(Point[] points) {
         int i = 1;
-        while(i < points.length) {
+        while (i < points.length) {
             int count = 1;
             double currentSlope = points[0].slopeTo(points[i]);
             for (int j = i + 1; j < points.length; j++) {
@@ -66,17 +89,8 @@ public class FastCollinearPoints {
         Arrays.sort(sortedPoints);
         Point p = sortedPoints[0];
         Point q = sortedPoints[sortedPoints.length - 1];
-        if (isSegmentPointsAlreadyExist(p, q)) {
+        if (p.compareTo(points[0]) > 0) {
             return;
-        }
-        existingSegmentPoints[countOfSegments][0] = p;
-        existingSegmentPoints[countOfSegments][1] = q;
-        if (existingSegmentPoints.length - 1 == countOfSegments) {
-            Point[][] resizedExistingSegmentPoints = new Point[existingSegmentPoints.length * 2][2];
-            for (int i = 0; i < existingSegmentPoints.length; i++) {
-                resizedExistingSegmentPoints[i] = existingSegmentPoints[i];
-            }
-            existingSegmentPoints = resizedExistingSegmentPoints;
         }
         segments[countOfSegments] = new LineSegment(p, q);
         if (segments.length - 1 == countOfSegments) {
@@ -87,31 +101,6 @@ public class FastCollinearPoints {
             segments = resizedSegments;
         }
         countOfSegments++;
-    }
-
-    private boolean isSegmentPointsAlreadyExist(Point p1, Point p2) {
-        for (int i = 0; i < countOfSegments; i++) {
-            Point ep1 = existingSegmentPoints[i][0];
-            Point ep2 = existingSegmentPoints[i][1];
-            if (ep1.compareTo(p1) == 0 && ep2.compareTo(p2) == 0) {
-                return true;
-            }
-            if (ep1.compareTo(p2) == 0 && ep2.compareTo(p1) == 0) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    private Point[] copyAndSwap(Point[] points, int i) {
-        Point[] result = new Point[points.length];
-        for (int j = 0; j < points.length; j++) {
-            result[j] = points[j];
-        }
-        Point tmp = result[i];
-        result[i] = result[0];
-        result[0] = tmp;
-        return result;
     }
 
     public int numberOfSegments() {

@@ -10,6 +10,9 @@ public class BruteCollinearPoints {
     private int countOfSegments;
 
     public BruteCollinearPoints(Point[] points) {
+        if (points == null) {
+            throw new IllegalArgumentException();
+        }
         for (Point point : points) {
             if (point == null) {
                 throw new IllegalArgumentException();

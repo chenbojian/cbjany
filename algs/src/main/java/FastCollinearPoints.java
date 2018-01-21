@@ -8,9 +8,12 @@ public class FastCollinearPoints {
 
     private LineSegment[] segments;
     private Point[][] existingSegmentPoints;
-    private int countOfSegments;
+    private int countOfSegments = 0;
 
     public FastCollinearPoints(Point[] points) {
+        if (points == null) {
+            throw new IllegalArgumentException();
+        }
         for (Point point : points) {
             if (point == null) {
                 throw new IllegalArgumentException();
@@ -24,34 +27,69 @@ public class FastCollinearPoints {
             }
         }
 
-        segments = new LineSegment[points.length];
-        existingSegmentPoints = new Point[points.length][2];
-        countOfSegments = 0;
+        segments = new LineSegment[1];
+        existingSegmentPoints = new Point[1][2];
 
         for (int i = 0; i < points.length; i++) {
             Point[] copiedPoints = copyAndSwap(points, i);
             copiedPoints[0].draw();
             Arrays.sort(copiedPoints, 1, copiedPoints.length, copiedPoints[0].slopeOrder());
-            for (int j = 1; j < copiedPoints.length - 2; j++) {
-                Point[] fourPoints = new Point[4];
-                fourPoints[0] = copiedPoints[0];
-                fourPoints[1] = copiedPoints[j];
-                fourPoints[2] = copiedPoints[j + 1];
-                fourPoints[3] = copiedPoints[j + 2];
-                if (isFourPointsOnSameSlope(fourPoints[0], fourPoints[1], fourPoints[2], fourPoints[3])) {
-                    Arrays.sort(fourPoints);
-                    if (isSlopeAlreadyExist(fourPoints[0], fourPoints[3])) {
-                        continue;
-                    }
-                    existingSegmentPoints[countOfSegments][0] = fourPoints[0];
-                    existingSegmentPoints[countOfSegments][1] = fourPoints[3];
-                    segments[countOfSegments++] = new LineSegment(fourPoints[0], fourPoints[3]);
-                }
-            }
+            findAndAddToSegments(copiedPoints);
+
         }
     }
 
-    private boolean isSlopeAlreadyExist(Point p1, Point p2) {
+    private void findAndAddToSegments(Point[] points) {
+        int i = 1;
+        while(i < points.length) {
+            int count = 1;
+            double currentSlope = points[0].slopeTo(points[i]);
+            for (int j = i + 1; j < points.length; j++) {
+                if (points[i].slopeTo(points[j]) == currentSlope) {
+                    count++;
+                }
+            }
+            if (count >= 3) {
+                Point[] pointsToAdd = new Point[count + 1];
+                pointsToAdd[0] = points[0];
+                for (int k = 0; k < count; k++) {
+                    pointsToAdd[k + 1] = points[i + k];
+                }
+                addToSegments(pointsToAdd);
+            }
+            i = i + count;
+        }
+    }
+
+    private void addToSegments(Point[] points) {
+        Point[] sortedPoints = Arrays.copyOf(points, points.length);
+        Arrays.sort(sortedPoints);
+        Point p = sortedPoints[0];
+        Point q = sortedPoints[sortedPoints.length - 1];
+        if (isSegmentPointsAlreadyExist(p, q)) {
+            return;
+        }
+        existingSegmentPoints[countOfSegments][0] = p;
+        existingSegmentPoints[countOfSegments][1] = q;
+        if (existingSegmentPoints.length - 1 == countOfSegments) {
+            Point[][] resizedExistingSegmentPoints = new Point[existingSegmentPoints.length * 2][2];
+            for (int i = 0; i < existingSegmentPoints.length; i++) {
+                resizedExistingSegmentPoints[i] = existingSegmentPoints[i];
+            }
+            existingSegmentPoints = resizedExistingSegmentPoints;
+        }
+        segments[countOfSegments] = new LineSegment(p, q);
+        if (segments.length - 1 == countOfSegments) {
+            LineSegment[] resizedSegments = new LineSegment[segments.length * 2];
+            for (int i = 0; i < segments.length; i++) {
+                resizedSegments[i] = segments[i];
+            }
+            segments = resizedSegments;
+        }
+        countOfSegments++;
+    }
+
+    private boolean isSegmentPointsAlreadyExist(Point p1, Point p2) {
         for (int i = 0; i < countOfSegments; i++) {
             Point ep1 = existingSegmentPoints[i][0];
             Point ep2 = existingSegmentPoints[i][1];
@@ -74,10 +112,6 @@ public class FastCollinearPoints {
         result[i] = result[0];
         result[0] = tmp;
         return result;
-    }
-
-    private boolean isFourPointsOnSameSlope(Point p1, Point p2, Point p3, Point p4) {
-        return p1.slopeTo(p2) == p1.slopeTo(p3) && p1.slopeTo(p3) == p1.slopeTo(p4);
     }
 
     public int numberOfSegments() {

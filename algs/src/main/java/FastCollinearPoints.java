@@ -7,16 +7,19 @@ import edu.princeton.cs.algs4.StdOut;
 public class FastCollinearPoints {
 
     private LineSegment[] segments;
-    private double[] slopes;
+    private Point[][] existingSegmentPoints;
     private int countOfSegments;
 
     public FastCollinearPoints(Point[] points) {
-        if (points.length < 4) {
-            return;
+        Arrays.sort(points);
+        for (int i = 0; i < points.length - 1; i++) {
+            if (points[i].compareTo(points[i + 1]) == 0) {
+                throw new IllegalArgumentException();
+            }
         }
 
         segments = new LineSegment[points.length / 2 + 1];
-        slopes = new double[points.length / 2 + 1];
+        existingSegmentPoints = new Point[points.length / 2 + 1][2];
         countOfSegments = 0;
 
         for (int i = 0; i < points.length; i++) {
@@ -31,19 +34,25 @@ public class FastCollinearPoints {
                 fourPoints[3] = copiedPoints[j + 2];
                 if (isFourPointsOnSameSlope(fourPoints[0], fourPoints[1], fourPoints[2], fourPoints[3])) {
                     Arrays.sort(fourPoints);
-                    if (isSlopeAlreadyExist(fourPoints[0].slopeTo(fourPoints[3]))) {
+                    if (isSlopeAlreadyExist(fourPoints[0], fourPoints[3])) {
                         continue;
                     }
-                    slopes[countOfSegments] = fourPoints[0].slopeTo(fourPoints[3]);
+                    existingSegmentPoints[countOfSegments][0] = fourPoints[0];
+                    existingSegmentPoints[countOfSegments][1] = fourPoints[3];
                     segments[countOfSegments++] = new LineSegment(fourPoints[0], fourPoints[3]);
                 }
             }
         }
     }
 
-    private boolean isSlopeAlreadyExist(double slope) {
+    private boolean isSlopeAlreadyExist(Point p1, Point p2) {
         for (int i = 0; i < countOfSegments; i++) {
-            if (slope == slopes[i]) {
+            Point ep1 = existingSegmentPoints[i][0];
+            Point ep2 = existingSegmentPoints[i][1];
+            if (ep1.compareTo(p1) == 0 && ep2.compareTo(p2) == 0 ) {
+                return true;
+            }
+            if (ep1.compareTo(p2) == 0 && ep2.compareTo(p1) == 0 ) {
                 return true;
             }
         }

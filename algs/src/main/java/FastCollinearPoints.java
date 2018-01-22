@@ -33,7 +33,6 @@ public class FastCollinearPoints {
 
             findAndAddToSegments(slopeOrderedPoints);
         }
-        StdOut.println("done");
     }
 
     private void validatePoints(Point[] points) {
@@ -61,16 +60,23 @@ public class FastCollinearPoints {
             int count = 1;
             Point min = points[0];
             Point max = points[0];
-            for (int j = i; j < points.length - 1; j++) {
-                if (points[j].compareTo(max) > 0) {
-                    max = points[j];
-                }
 
-                if (points[j].compareTo(min) < 0) {
-                    min = points[j];
-                }
-                
+            if (points[i].compareTo(max) > 0) {
+                max = points[i];
+            }
+
+            if (points[i].compareTo(min) < 0) {
+                min = points[i];
+            }
+            for (int j = i; j < points.length - 1; j++) {
                 if (points[0].slopeTo(points[j]) == points[0].slopeTo(points[j + 1])) {
+                    if (points[j + 1].compareTo(max) > 0) {
+                        max = points[j + 1];
+                    }
+
+                    if (points[j + 1].compareTo(min) < 0) {
+                        min = points[j + 1];
+                    }
                     count++;
                 } else {
                     break;

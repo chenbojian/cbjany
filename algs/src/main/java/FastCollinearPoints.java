@@ -7,11 +7,36 @@ import edu.princeton.cs.algs4.StdOut;
 public class FastCollinearPoints {
 
     private LineSegment[] segments;
-    private Point[] points;
-    private double[][] pointSlopes;
     private int countOfSegments = 0;
 
     public FastCollinearPoints(Point[] points) {
+        validatePoints(points);
+
+        segments = new LineSegment[points.length];
+
+        findCollinear(points);
+    }
+
+    private void findCollinear(Point[] originPoints) {
+        Point[] points = Arrays.copyOf(originPoints, originPoints.length);
+        Arrays.sort(points);
+
+        for (int i = 0; i < points.length; i++) {
+            Point[] tempPoints = new Point[points.length - 1];
+            System.arraycopy(points, 0, tempPoints, 0, i);
+            System.arraycopy(points, i + 1, tempPoints, i, points.length - i - 1);
+            Arrays.sort(tempPoints, points[i].slopeOrder());
+
+            Point[] slopeOrderedPoints = new Point[tempPoints.length + 1];
+            slopeOrderedPoints[0] = points[i];
+            System.arraycopy(tempPoints, 0, slopeOrderedPoints, 1, tempPoints.length);
+
+            findAndAddToSegments(slopeOrderedPoints);
+        }
+        StdOut.println("done");
+    }
+
+    private void validatePoints(Point[] points) {
         if (points == null) {
             throw new IllegalArgumentException();
         }
@@ -20,44 +45,12 @@ public class FastCollinearPoints {
                 throw new IllegalArgumentException();
             }
         }
-        for (int i = 0; i < points.length - 1; i++) {
-            for (int j = 1; j < points.length; j++) {
-                if (i != j && points[i].compareTo(points[j]) == 0) {
-                    throw new IllegalArgumentException();
-                }
-            }
-        }
-        this.points = new Point[points.length];
-        for (int i = 0; i < points.length; i++) {
-            this.points[i] = points[i];
-        }
-        Arrays.sort(this.points);
+        Point[] copiedPoints = Arrays.copyOf(points, points.length);
+        Arrays.sort(copiedPoints);
 
-        initPointSlopes(this.points);
-
-        segments = new LineSegment[1];
-
-        for (int i = 0; i < this.points.length; i++) {
-            Point[] copiedPoints = new Point[this.points.length];
-            copiedPoints[0] = this.points[i];
-            for (int j = 1; j < this.points.length; j++) {
-                copiedPoints[j] = i == j ? this.points[0] : this.points[j];
-            }
-
-            Arrays.sort(copiedPoints, 1, copiedPoints.length, copiedPoints[0].slopeOrder());
-            findAndAddToSegments(copiedPoints);
-        }
-    }
-
-    private void initPointSlopes(Point[] points) {
-        pointSlopes = new double[points.length][points.length];
-        for (int i = 0; i < points.length; i++) {
-            for (int j = 0; j < points.length; j++) {
-                if (i > j) {
-                    pointSlopes[i][j] = pointSlopes[j][i];
-                } else {
-                    pointSlopes[i][j] = points[i].slopeTo(points[j]);
-                }
+        for (int i = 0; i < copiedPoints.length - 1; i++) {
+            if (copiedPoints[i].compareTo(copiedPoints[i + 1]) == 0) {
+                throw new IllegalArgumentException();
             }
         }
     }
@@ -66,32 +59,32 @@ public class FastCollinearPoints {
         int i = 1;
         while (i < points.length) {
             int count = 1;
-            double currentSlope = points[0].slopeTo(points[i]);
-            for (int j = i + 1; j < points.length; j++) {
-                if (points[i].slopeTo(points[j]) == currentSlope) {
+            Point min = points[0];
+            Point max = points[0];
+            for (int j = i; j < points.length - 1; j++) {
+                if (points[j].compareTo(max) > 0) {
+                    max = points[j];
+                }
+
+                if (points[j].compareTo(min) < 0) {
+                    min = points[j];
+                }
+                
+                if (points[0].slopeTo(points[j]) == points[0].slopeTo(points[j + 1])) {
                     count++;
+                } else {
+                    break;
                 }
             }
-            if (count >= 3) {
-                Point[] pointsToAdd = new Point[count + 1];
-                pointsToAdd[0] = points[0];
-                for (int k = 0; k < count; k++) {
-                    pointsToAdd[k + 1] = points[i + k];
-                }
-                addToSegments(pointsToAdd);
+
+            if (count >= 3 && min.compareTo(points[0]) == 0) {
+                addToSegments(min, max);
             }
             i = i + count;
         }
     }
 
-    private void addToSegments(Point[] points) {
-        Point[] sortedPoints = Arrays.copyOf(points, points.length);
-        Arrays.sort(sortedPoints);
-        Point p = sortedPoints[0];
-        Point q = sortedPoints[sortedPoints.length - 1];
-        if (p.compareTo(points[0]) > 0) {
-            return;
-        }
+    private void addToSegments(Point p, Point q) {
         segments[countOfSegments] = new LineSegment(p, q);
         if (segments.length - 1 == countOfSegments) {
             LineSegment[] resizedSegments = new LineSegment[segments.length * 2];

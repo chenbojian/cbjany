@@ -212,7 +212,7 @@ public class Board {
 
         for (int i = 0; i < n; i++) {
             for (int j = 0; j < n; j++) {
-                s.append(String.format("%2d ", (int)blocks[i][j]));
+                s.append(String.format("%2d ", blocks[i][j]));
             }
             s.append("\n");
         }

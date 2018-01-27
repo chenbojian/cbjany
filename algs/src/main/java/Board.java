@@ -5,39 +5,12 @@ import edu.princeton.cs.algs4.StdOut;
 
 public class Board {
     private final int n;
-    private int hamming;
-    private int manhattan;
-    private char[][] blocks;
-    private int zeroRow;
-    private int zeroCol;
+    private int[][] blocks;
 
     public Board(int[][] blocks) {
         preCheckArguments(blocks);
         this.n = blocks.length;
-        this.hamming = 0;
-        this.manhattan = 0;
-        this.blocks = new char[n][n];
-        for (int i = 0; i < n; i++) {
-            for (int j = 0; j < n; j++) {
-                this.blocks[i][j] = (char)blocks[i][j];
-            }
-        }
-
-        for (int i = 0; i < this.n; i++) {
-            for (int j = 0; j < this.n; j++) {
-                if (blocks[i][j] == 0) {
-                    zeroRow = i;
-                    zeroCol = j;
-                    continue;
-                }
-                int goalRow = getGoalRow(blocks[i][j]);
-                int goalCol = getGoalCol(blocks[i][j]);
-                if (goalRow != i || goalCol != j) {
-                    this.hamming++;
-                    this.manhattan += Math.abs(goalRow - i) + Math.abs(goalCol - j);
-                }
-            }
-        }
+        this.blocks = blocks;
     }
 
     private void preCheckArguments(int[][] blocks) {
@@ -87,18 +60,67 @@ public class Board {
     }
 
     public int hamming() {
-        return this.hamming;
+        int result = 0;
+        for (int i = 0; i < this.n; i++) {
+            for (int j = 0; j < this.n; j++) {
+                if (blocks[i][j] == 0) {
+                    continue;
+                }
+                int goalRow = getGoalRow(blocks[i][j]);
+                int goalCol = getGoalCol(blocks[i][j]);
+                if (goalRow != i || goalCol != j) {
+                    result++;
+                }
+            }
+        }
+        return result;
     }
 
     public int manhattan() {
-        return this.manhattan;
+        int result = 0;
+        for (int i = 0; i < this.n; i++) {
+            for (int j = 0; j < this.n; j++) {
+                if (blocks[i][j] == 0) {
+                    continue;
+                }
+                int goalRow = getGoalRow(blocks[i][j]);
+                int goalCol = getGoalCol(blocks[i][j]);
+                if (goalRow != i || goalCol != j) {
+                    result += Math.abs(goalRow - i) + Math.abs(goalCol - j);
+                }
+            }
+        }
+        return result;
     }
 
     public boolean isGoal() {
-        return this.hamming == 0;
+        for (int i = 0; i < this.n; i++) {
+            for (int j = 0; j < this.n; j++) {
+                if (blocks[i][j] == 0) {
+                    continue;
+                }
+                int goalRow = getGoalRow(blocks[i][j]);
+                int goalCol = getGoalCol(blocks[i][j]);
+                if (goalRow != i || goalCol != j) {
+                    return false;
+                }
+            }
+        }
+        return true;
     }
 
     public Board twin() {
+        int zeroRow = -1;
+        int zeroCol = -1;
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n; j++) {
+                if (blocks[i][j] == 0) {
+                    zeroRow = i;
+                    zeroCol = j;
+                    break;
+                }
+            }
+        }
         int row = getNeighborIndexes(zeroRow).dequeue();
         int col = getNeighborIndexes(zeroCol).dequeue();
         int[][] twinBlocks = cloneBlocksWithExchange(zeroRow, col, row, zeroCol);
@@ -124,15 +146,6 @@ public class Board {
         if (y == null) return false;
         if (y.getClass() != this.getClass()) return false;
         Board that = (Board) y;
-        if (this.dimension() != that.dimension()) {
-            return false;
-        }
-        if (this.manhattan() != that.manhattan()) {
-            return false;
-        }
-        if (this.hamming() != that.hamming()) {
-            return false;
-        }
 
         for (int i = 0; i < n; i++) {
             for (int j = 0; j < n; j++) {
@@ -145,6 +158,18 @@ public class Board {
     }
 
     public Iterable<Board> neighbors() {
+        int zeroRow = -1;
+        int zeroCol = -1;
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n; j++) {
+                if (blocks[i][j] == 0) {
+                    zeroRow = i;
+                    zeroCol = j;
+                    break;
+                }
+            }
+        }
+
         Queue<Integer> neighborRows = getNeighborIndexes(zeroRow);
         Queue<Integer> neighborCols = getNeighborIndexes(zeroCol);
         Queue<Board> result = new Queue<>();

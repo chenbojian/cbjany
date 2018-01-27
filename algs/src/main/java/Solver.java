@@ -10,9 +10,13 @@ public class Solver {
         private final Board board;
         private final SearchNode prev;
         private final int length;
+        private final int manhattan;
+        private final boolean isGoal;
 
         SearchNode(Board board, SearchNode predecessor) {
             this.board = board;
+            this.manhattan = this.board.manhattan();
+            this.isGoal = this.board.isGoal();
             this.prev = predecessor;
             if (predecessor == null) {
                 this.length = 0;
@@ -42,21 +46,10 @@ public class Solver {
             return result;
         }
 
-        private int getScore() {
-            return this.length + this.board.manhattan();
-        }
 
         @Override
         public int compareTo(SearchNode that) {
-            if (this.getScore() > that.getScore()) {
-                return 1;
-            }
-
-            if (this.getScore() < that.getScore()) {
-                return -1;
-            }
-
-            return 0;
+            return this.length + this.manhattan - that.length - that.manhattan;
         }
     }
 
@@ -73,24 +66,28 @@ public class Solver {
         twinOpenSet.insert(new SearchNode(initial.twin(), null));
 
         while (!openSet.isEmpty() && !twinOpenSet.isEmpty()) {
-            SearchNode node = openSet.delMin();
-            if (node.board.isGoal()) {
-                solutionNode = node;
+            SearchNode result = findGoal(openSet);
+            SearchNode twinResult = findGoal(twinOpenSet);
+            if (result != null) {
+                solutionNode = result;
                 break;
             }
-            for (SearchNode n : node.neighbors()) {
-                openSet.insert(n);
-            }
-            SearchNode twinNode = twinOpenSet.delMin();
-            if (twinNode.board.isGoal()) {
+            if (twinResult != null) {
                 break;
             }
-            for (SearchNode n : twinNode.neighbors()) {
-                twinOpenSet.insert(n);
-            }
-
         }
 
+    }
+
+    private SearchNode findGoal(MinPQ<SearchNode> openSet) {
+        SearchNode node = openSet.delMin();
+        if (node.isGoal) {
+            return node;
+        }
+        for (SearchNode n : node.neighbors()) {
+            openSet.insert(n);
+        }
+        return null;
     }
 
     public boolean isSolvable(){

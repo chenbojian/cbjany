@@ -5,7 +5,7 @@ import edu.princeton.cs.algs4.StdOut;
 
 public class Board {
     private final int n;
-    private int[][] blocks;
+    private final int[][] blocks;
 
     public Board(int[][] blocks) {
         preCheckArguments(blocks);
@@ -132,7 +132,7 @@ public class Board {
         int[][] clonedBlocks = new int[n][n];
         for (int i = 0; i < n; i++) {
             for (int j = 0; j < n; j++) {
-                clonedBlocks[i][j] = (int)blocks[i][j];
+                clonedBlocks[i][j] = blocks[i][j];
             }
         }
         int temp = clonedBlocks[srcRow][srcCol];
@@ -146,6 +146,8 @@ public class Board {
         if (y == null) return false;
         if (y.getClass() != this.getClass()) return false;
         Board that = (Board) y;
+
+        if (that.n != this.n) return false;
 
         for (int i = 0; i < n; i++) {
             for (int j = 0; j < n; j++) {

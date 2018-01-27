@@ -28,7 +28,7 @@ public class Solver {
         Iterable<SearchNode> neighbors() {
             Queue<SearchNode> result = new Queue<>();
             for (Board b : board.neighbors()) {
-                if (prev != null && prev.board.equals(board)) {
+                if (prev != null && prev.board.equals(b)) {
                     continue;
                 }
                 result.enqueue(new SearchNode(b, this));

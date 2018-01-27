@@ -6,7 +6,7 @@ import edu.princeton.cs.algs4.StdOut;
 
 public class Solver {
 
-    private class SearchNode implements Comparable {
+    private class SearchNode implements Comparable<SearchNode> {
         private final Board board;
         private final SearchNode prev;
         private final int length;
@@ -42,25 +42,12 @@ public class Solver {
             return result;
         }
 
-        SearchNode getHead() {
-            SearchNode current = this;
-            while (current.prev != null) {
-                current = current.prev;
-            }
-            return current;
-        }
-
         private int getScore() {
             return this.length + this.board.manhattan();
         }
 
         @Override
-        public int compareTo(Object o) {
-            if (!(o instanceof SearchNode)) {
-                throw new IllegalArgumentException();
-            }
-            SearchNode that = (SearchNode)o;
-
+        public int compareTo(SearchNode that) {
             if (this.getScore() > that.getScore()) {
                 return 1;
             }
@@ -112,14 +99,14 @@ public class Solver {
 
     public int moves(){
         if (!isSolvable()) {
-            throw new IllegalArgumentException();
+            return -1;
         }
         return solutionNode.length;
     }
 
     public Iterable<Board> solution(){
         if (!isSolvable()) {
-            throw new IllegalArgumentException();
+            return null;
         }
         return solutionNode.reconstructPath();
     }

@@ -10,7 +10,12 @@ public class Board {
     public Board(int[][] blocks) {
         preCheckArguments(blocks);
         this.n = blocks.length;
-        this.blocks = blocks;
+        this.blocks = new int[n][n];
+        for (int i = 0; i < n; i ++) {
+            for (int j = 0; j < n; j ++) {
+                this.blocks[i][j] = blocks[i][j];
+            }
+        }
     }
 
     private void preCheckArguments(int[][] blocks) {

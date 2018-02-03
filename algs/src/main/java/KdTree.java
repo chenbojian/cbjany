@@ -1,4 +1,7 @@
-import edu.princeton.cs.algs4.*;
+import edu.princeton.cs.algs4.Point2D;
+import edu.princeton.cs.algs4.Queue;
+import edu.princeton.cs.algs4.RectHV;
+import edu.princeton.cs.algs4.StdDraw;
 
 public class KdTree {
     private int size;
@@ -115,9 +118,9 @@ public class KdTree {
     private boolean isRectContainsLeftOrBottom(RectHV rect, Node node) {
         boolean isVerticle = node.rect.xmin() == node.rect.xmax();
         if (isVerticle) {
-            return rect.xmin() < node.p.x();
+            return Double.compare(rect.xmin(), node.p.x()) < 0;
         } else {
-            return rect.ymin() < node.p.y();
+            return Double.compare(rect.ymin(), node.p.y()) < 0;
         }
     }
 
@@ -148,6 +151,7 @@ public class KdTree {
     }
 
     public Iterable<Point2D> range(RectHV rect) {
+        if (rect == null) throw new IllegalArgumentException();
         Queue<Point2D> points = new Queue<>();
         searchInRange(rect, root, points);
         return points;
@@ -163,7 +167,7 @@ public class KdTree {
             newNearestNode = root;
         }
 
-        boolean isVerticle = root.rect.xmin() == root.rect.xmax();
+        boolean isVerticle = Double.compare(root.rect.xmin(), root.rect.xmax()) == 0;
 
         if (isPointLeftOrBottom(point, root.p, isVerticle)) {
             newNearestNode = searchNearest(point, root.lb, newNearestNode);
@@ -180,6 +184,7 @@ public class KdTree {
     }
 
     public Point2D nearest(Point2D p) {
+        if (p == null) throw new IllegalArgumentException();
         if (root == null) return null;
         return searchNearest(p, root, root).p;
     }
